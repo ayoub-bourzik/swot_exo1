@@ -11,6 +11,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
+      theme: ThemeData(
+      primaryColor: Colors.orange.shade800,
+      accentColor: Colors.white,
+    ),
     );
   }
 }
@@ -24,17 +28,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Mes Articles',
-            style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Center(
+            child: Text(
+              'Mes Articles',
+              style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+            ),
+          ),
+          bottom: TabBar(
+            tabs: <Widget>[
+              Tab(
+                icon: Icon(Icons.cast),
+                child: Text("News"),
+              ),
+              Tab(
+                icon: Icon(Icons.star),
+                child: Text("Favorited"),
+              ),
+            ],
           ),
         ),
-        backgroundColor: Colors.orange.shade800,
+        body: TabBarView(
+          children: [
+            MyArticles(),
+            MyFavoritedArticles(),
+          ],
+        ),
       ),
-      body: MyArticles(),
     );
   }
 }
@@ -47,7 +70,6 @@ class MyArticles extends StatefulWidget {
 
 class _MyArticlesState extends State<MyArticles> {
   final _articles = articles;
-  bool isFavorited = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,12 +97,58 @@ class _MyArticlesState extends State<MyArticles> {
           ],
         ),
         leading: IconButton(
-          icon: isFavorited ? Icon(Icons.star) : Icon(Icons.star_border),
+          icon: _articles[index].isFavorited
+              ? Icon(Icons.star)
+              : Icon(Icons.star_border),
           onPressed: () {
             setState(() {
-             isFavorited = !isFavorited; 
+              _articles[index].isFavorited = !_articles[index].isFavorited;
+              favoritedArticles.add(_articles[index]);
             });
           },
+        ),
+      ),
+    );
+  }
+}
+
+class MyFavoritedArticles extends StatefulWidget {
+  @override
+  _MyFavoritedArticlesState createState() => _MyFavoritedArticlesState();
+}
+
+class _MyFavoritedArticlesState extends State<MyFavoritedArticles> {
+  final _favoritedArticles = favoritedArticles;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_favoritedArticles.length > 0)
+      return ListView.builder(
+        itemCount: _favoritedArticles.length,
+        itemBuilder: _buildItem,
+      );
+    else
+      return Center(
+        child: Text('There is no favorited article yet !'),
+      );
+  }
+
+  Widget _buildItem(context, index) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
+      child: ListTile(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Title : ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              _favoritedArticles[index].title,
+              style: TextStyle(fontSize: 18.0),
+            ),
+          ],
         ),
       ),
     );
