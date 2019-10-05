@@ -103,7 +103,10 @@ class _MyArticlesState extends State<MyArticles> {
           onPressed: () {
             setState(() {
               _articles[index].isFavorited = !_articles[index].isFavorited;
-              favoritedArticles.add(_articles[index]);
+              if(_articles[index].isFavorited)
+                favoritedArticles.add(_articles[index]);
+              else
+                favoritedArticles.removeAt(index);
             });
           },
         ),
