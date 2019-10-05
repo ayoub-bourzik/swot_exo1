@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:swot_exo1/detail_page.dart';
 import 'articles.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -12,9 +11,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: HomePage(),
       theme: ThemeData(
-      primaryColor: Colors.orange.shade800,
-      accentColor: Colors.white,
-    ),
+        primaryColor: Colors.orange.shade800,
+        accentColor: Colors.white,
+      ),
     );
   }
 }
@@ -82,33 +81,60 @@ class _MyArticlesState extends State<MyArticles> {
   Widget _buildItem(context, index) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-      child: ListTile(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Title : ',
-              style: TextStyle(fontWeight: FontWeight.bold),
+      child: Card(
+        elevation: 5.0,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Title : ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  _articles[index].title,
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      '${_articles[index].commentCount} Comments',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w200,
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
-            Text(
-              _articles[index].title,
-              style: TextStyle(fontSize: 18.0),
+            leading: IconButton(
+              icon: _articles[index].isFavorited
+                  ? Icon(Icons.star)
+                  : Icon(Icons.star_border),
+              onPressed: () {
+                setState(() {
+                  _articles[index].isFavorited = !_articles[index].isFavorited;
+                  if (_articles[index].isFavorited)
+                    favoritedArticles.add(_articles[index]);
+                  else
+                    favoritedArticles.removeAt(index);
+                });
+              },
             ),
-          ],
-        ),
-        leading: IconButton(
-          icon: _articles[index].isFavorited
-              ? Icon(Icons.star)
-              : Icon(Icons.star_border),
-          onPressed: () {
-            setState(() {
-              _articles[index].isFavorited = !_articles[index].isFavorited;
-              if(_articles[index].isFavorited)
-                favoritedArticles.add(_articles[index]);
-              else
-                favoritedArticles.removeAt(index);
-            });
-          },
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                          article: _articles[index],
+                        )),
+              );
+            },
+          ),
         ),
       ),
     );
